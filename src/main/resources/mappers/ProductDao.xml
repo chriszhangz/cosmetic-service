@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cosmetic.dao.ProductDao">
+
+
+
+	<resultMap id="BaseResultMap" type="com.cosmetic.entity.Product">
+		<id column="product_id" jdbcType="INTEGER" property="product_id" />
+		<result column="product_sku" jdbcType="VARCHAR" property="product_sku" />
+		<result column="product_name" jdbcType="VARCHAR" property="product_name" />
+		<result column="product_name_en" jdbcType="VARCHAR" property="product_name_en" />
+		<result column="upc" jdbcType="DECIMAL" property="upc" />
+		<result column="product_description" jdbcType="VARCHAR" property="product_description" />
+		<result column="product_description_en" jdbcType="VARCHAR" property="product_description_en" />
+		<result column="brand_id" jdbcType="INTEGER" property="brand_id" />
+		<result column="brand_name" jdbcType="VARCHAR" property="brand_name" />
+		<result column="brand_name_en" jdbcType="VARCHAR" property="brand_name_en" />
+		<result column="type" jdbcType="VARCHAR" property="type" />
+		<result column="standard_price" jdbcType="DECIMAL" property="standard_price" />
+		<result column="member_price" jdbcType="DECIMAL" property="member_price" />
+		<result column="quantity" jdbcType="INTEGER" property="quantity" />
+		<result column="weight" jdbcType="DECIMAL" property="weight" />
+		<result column="size" jdbcType="VARCHAR" property="size" />
+		<result column="material" jdbcType="VARCHAR" property="material" />
+		<result column="color" jdbcType="VARCHAR" property="color" />
+		<result column="image_url" jdbcType="VARCHAR" property="image_url" />
+		<result column="detail" jdbcType="VARCHAR" property="detail" />
+		<result column="not_show" jdbcType="INTEGER" property="not_show" />
+		<collection property="images" column="product_sku" ofType="com.cosmetic.entity.Image">
+			<id column="image_id" property="image_id" jdbcType="INTEGER" />
+			<result column="product_sku" property="product_sku" jdbcType="VARCHAR" />
+			<result column="image_seq" property="image_seq" jdbcType="INTEGER" />
+			<result column="image_url1" property="image_url" jdbcType="VARCHAR" />
+		</collection>
+	</resultMap>
+
+	<resultMap id="ListResultMap" type="com.cosmetic.entity.ProductForList">
+		<id column="product_id" jdbcType="INTEGER" property="product_id" />
+		<result column="product_sku" jdbcType="VARCHAR" property="product_sku" />
+		<result column="product_name" jdbcType="VARCHAR" property="product_name" />
+		<result column="product_name_en" jdbcType="VARCHAR" property="product_name_en" />
+		<result column="product_description" jdbcType="VARCHAR" property="product_description" />
+		<result column="product_description_en" jdbcType="VARCHAR" property="product_description_en" />
+		<result column="brand_id" jdbcType="INTEGER" property="brand_id" />
+		<result column="brand_name" jdbcType="VARCHAR" property="brand_name" />
+		<result column="brand_name_en" jdbcType="VARCHAR" property="brand_name_en" />
+		<result column="type" jdbcType="VARCHAR" property="type" />
+		<result column="standard_price" jdbcType="DECIMAL" property="standard_price" />
+		<result column="member_price" jdbcType="DECIMAL" property="member_price" />	
+		<result column="image_url" jdbcType="VARCHAR" property="image_url" />
+		<result column="detail" jdbcType="VARCHAR" property="detail" />
+		<result column="not_show" jdbcType="INTEGER" property="not_show" />			
+	</resultMap>
+
+	
+	<select id="getPurchaseName" parameterType="int" resultType="String">
+		SELECT sp.product_name from cos_products sp, shu_order_info soi 
+		where soi.so_id = #{product_sku} and soi.product_sku = sp.product_sku
+	</select>	
+		
+	<select id="selectBySku" parameterType="map" resultMap="BaseResultMap">
+		select
+		sp.*,si.image_id,si.product_sku,si.image_seq,si.image_url as image_url1
+		from cos_products sp
+		left join shu_image si
+		on sp.product_sku =
+		si.product_sku
+		where sp.product_sku = #{product_sku} and
+		sp.parentage = 'Child' and sp.not_show = 0
+	</select>
+	<update id="updateProductNum" parameterType="map">
+		update cos_products
+		set quantity = quantity -
+		#{quantity} where product_sku
+		=
+		#{product_sku}
+	</update>
+
+
+
+	
+	<select id="countByPromo" parameterType="map" resultType="int">
+		select count(1) from (
+		select a.* from
+			shu_promolist spl
+		left join cos_products a on spl.product_sku= a.product_sku
+		WHERE
+		spl.category = #{category}
+		and a.parentage = 'Child' and a.not_show = 0
+		<if test="style_type != null">
+			and a.style_type = #{style_type}
+		</if>
+		<if test="size_us != null">
+			and a.size_us = #{size_us}
+		</if>
+		<if test="color != null">
+			and a.color = #{color}
+		</if>
+		) b
+	</select>
+		
+	<select id="filterBySSC" parameterType="map" resultMap="BaseResultMap">
+		select sp.*,si.image_id,si.product_sku,si.image_seq,si.image_url as image_url1
+		from
+		(select a.* from
+		cos_products a
+		WHERE
+		a.parentage = 'Child' and a.not_show = 0
+		<if test="style_type != null">
+			and a.style_type = #{style_type}
+		</if>
+		<if test="size_us != null">
+			and a.size_us = #{size_us}
+		</if>
+		<if test="color != null">
+			and a.color = #{color}
+		</if>
+		GROUP BY
+			a.parent_sku
+		LIMIT #{start},#{leng}
+		) as sp
+		left join shu_image si
+		on
+		sp.product_sku = si.product_sku
+
+	</select>
+	
+	<select id="listByPromo" parameterType="map" resultMap="BaseResultMap">
+		select sp.*,si.image_id,si.product_sku,si.image_seq,si.image_url as image_url1
+		from
+		(select a.* from
+			shu_promolist spl
+		left join cos_products a on spl.product_sku= a.product_sku
+		WHERE
+		spl.category = #{category}
+		and a.parentage = 'Child' and a.not_show = 0
+		<if test="style_type != null">
+			and a.style_type = #{style_type}
+		</if>
+		<if test="size_us != null">
+			and a.size_us = #{size_us}
+		</if>
+		<if test="color != null">
+			and a.color = #{color}
+		</if>
+	
+		LIMIT #{start},#{leng}
+		) as sp
+		left join shu_image si
+		on
+		sp.product_sku = si.product_sku
+
+	</select>	
+	<select id="getPromoList"  resultType="String">
+		select category
+		from shu_promolist
+		group by category
+	</select>	
+	<select id="selectPriceBySku" parameterType="String" resultType="map">
+		select
+		standard_price,member_price,quantity
+		from cos_products
+		where sp.product_sku = #{product_sku}
+	</select>
+	<update id="subQuantityBySku" parameterType="String">
+		update cos_products set quantity = quantity-1 where product_sku = #{product_sku}
+	</update>
+	<select id="selectQuantityBySku" parameterType="String" resultType="int">
+		select quantity from cos_products where product_sku = #{product_sku}
+	</select>	
+	<select id="insertBatch" parameterType="java.util.List">
+		INSERT INTO cos_products (
+		product_sku,
+		product_name,
+		product_name_en,
+		upc,
+		product_description,
+		product_description_en,
+		brand_id,
+		brand_name,
+		brand_name_en,
+		type,
+		standard_price,
+		member_price,
+		quantity,
+		weight,
+		size,
+		material,
+		color,
+		image_url,
+		detail,
+		not_show
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+			(
+			#{item.product_sku,jdbcType=VARCHAR},
+			#{item.product_name,jdbcType=VARCHAR},
+			#{item.product_name_en,jdbcType=VARCHAR},
+			#{item.upc,jdbcType=DECIMAL},
+			#{item.product_description,jdbcType=VARCHAR},
+			#{item.product_description_en,jdbcType=VARCHAR},
+			#{item.brand_id,jdbcType=INTEGER},
+			#{item.brand_name,jdbcType=VARCHAR},
+			#{item.brand_name_en,jdbcType=VARCHAR},
+			#{item.type,jdbcType=VARCHAR},
+			#{item.standard_price,jdbcType=DECIMAL},
+			#{item.member_price,jdbcType=DECIMAL},
+			#{item.quantity,jdbcType=INTEGER},
+			#{item.weight,jdbcType=DECIMAL},
+			#{item.size,jdbcType=VARCHAR},
+			#{item.material,jdbcType=VARCHAR},
+			#{item.color,jdbcType=VARCHAR},
+			#{item.image_url,jdbcType=VARCHAR},
+			#{item.detail,jdbcType=VARCHAR},
+			#{item.not_show,jdbcType=INTEGER}
+			)
+		</foreach>
+	</select>
+</mapper>

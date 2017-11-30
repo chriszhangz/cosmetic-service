@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cosmetic.dao.ProfileDao">
+	<resultMap id="ProfileResultMap" type="com.cosmetic.entity.UserProfile">
+		<id column="profile_id" property="profile_id" jdbcType="VARCHAR" />
+		<result column="user_id" property="user_id" jdbcType="INTEGER" />
+		<result column="name_of_card" property="name_of_card" jdbcType="VARCHAR" />
+		<result column="tail" property="tail" jdbcType="INTEGER" />
+		<result column="card_type" property="card_type" jdbcType="VARCHAR" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+		<result column="address_country" property="address_country" jdbcType="VARCHAR" />
+		<result column="address_state" property="address_state" jdbcType="VARCHAR" />
+		<result column="address_city" property="address_city" jdbcType="VARCHAR" />
+		<result column="address_line1" property="address_line1" jdbcType="VARCHAR" />
+		<result column="address_line2" property="address_line2" jdbcType="VARCHAR" />
+		<result column="address_zip" property="address_zip" jdbcType="VARCHAR" />
+	</resultMap>
+
+
+
+	<select id="getProfileByUid" parameterType="int" resultMap="ProfileResultMap">
+		SELECT
+		A.profile_id,
+		A.name_of_card,
+		A.tail,
+		A.card_type,
+		A.phone
+		FROM
+		shu_user_profile A
+		WHERE
+		A.user_id = #{user_id}
+	</select>
+	<insert id="insert" parameterType="com.cosmetic.entity.UserProfile">
+		INSERT INTO shu_user_profile
+		(
+		profile_id,
+		user_id,
+		name_of_card,
+		tail,
+		card_type,
+		phone,
+		address_country,
+		address_state,
+		address_city,
+		address_line1,
+		address_line2,
+		address_zip		
+		)
+		VALUES
+		(
+		#{profile_id,jdbcType=VARCHAR}, #{user_id,jdbcType=INTEGER},
+		#{name_of_card,jdbcType=VARCHAR},
+		#{tail,jdbcType=INTEGER},#{card_type,jdbcType=VARCHAR},
+		#{phone,jdbcType=VARCHAR},#{address_country,jdbcType=VARCHAR},#{address_state,jdbcType=VARCHAR},#{address_city,jdbcType=VARCHAR},
+		#{address_line1,jdbcType=VARCHAR},#{address_line2,jdbcType=VARCHAR},#{address_zip,jdbcType=VARCHAR}
+		)
+	</insert>
+	<select id="countByPrimaryKey" resultType="java.lang.Integer" parameterType="String">
+		select
+		count(profile_id) from shu_user_profile where profile_id =
+		#{profile_id,jdbcType=VARCHAR}
+	</select>
+	<select id="countByUid" resultType="java.lang.Integer" parameterType="int">
+		select
+		count(profile_id) from shu_user_profile where user_id =
+		#{user_id,jdbcType=INTEGER}
+	</select>
+	<select id="selectByPrimaryKey" resultMap="ProfileResultMap" parameterType="String">
+		select * from
+		shu_user_profile sup where
+		sup.profile_id =
+		#{profile_id,jdbcType=VARCHAR}
+	</select>
+	<update id="updateByPrimaryKey" parameterType="com.cosmetic.entity.UserProfile">
+		update
+		shu_user_profile
+		set user_id =
+		#{user_id,jdbcType=INTEGER},
+		name_of_card = #{name_of_card,jdbcType=VARCHAR},
+		exp_year = #{exp_year,jdbcType=VARCHAR},
+		exp_month =
+		#{exp_month,jdbcType=VARCHAR},
+		tail = #{tail,jdbcType=INTEGER}
+		where profile_id =
+		#{profile_id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateAddressIdByPK" parameterType="Map">
+		update
+		shu_user_profile
+		set address_id =
+		#{address_id,jdbcType=INTEGER}
+		where
+		profile_id = #{profile_id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByAddressId" parameterType="Map">
+		update shu_user_profile
+		set address_id = 0
+		where address_id =
+		#{address_id,jdbcType=INTEGER}
+		and
+		user_id =
+		#{user_id,jdbcType=INTEGER}
+		<if test="profile_id != null">
+			and profile_id != #{profile_id,jdbcType=VARCHAR}
+		</if>
+
+	</update>
+	<delete id="deleteByPrimaryKey" parameterType="String">
+		delete from
+		shu_user_profile
+		where profile_id =
+		#{profile_id,jdbcType=VARCHAR}
+	</delete>
+	<delete id="deleteByUid" parameterType="int">
+		delete from
+		shu_user_profile
+		where user_id =
+		#{user_id,jdbcType=INTEGER}
+	</delete>	
+
+</mapper>

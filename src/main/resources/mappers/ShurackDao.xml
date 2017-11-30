@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cosmetic.dao.ShurackDao">
+	<resultMap id="BaseResultMap" type="com.cosmetic.entity.Shurack">
+		<id column="shurack_id" jdbcType="INTEGER" property="shurack_id" />
+		<result column="user_id" jdbcType="INTEGER" property="user_id" />
+		<result column="product_sku" jdbcType="VARCHAR" property="product_sku" />
+		<result column="add_time" jdbcType="INTEGER" property="add_time" />
+		<result column="donate_time" jdbcType="INTEGER" property="donate_time" />
+		<result column="buy_time" jdbcType="INTEGER" property="buy_time" />
+		<result column="ship_time" jdbcType="INTEGER" property="ship_time" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+		<result column="style_type" jdbcType="VARCHAR" property="style_type" />
+		<result column="quantity" jdbcType="INTEGER" property="quantity" />
+		<result column="size_us" jdbcType="VARCHAR" property="size_us" />
+		<result column="color" jdbcType="VARCHAR" property="color" />
+		<result column="image_url" jdbcType="VARCHAR" property="image_url" />
+		<result column="product_name" jdbcType="VARCHAR" property="product_name" />
+		<result column="member_price" jdbcType="DECIMAL" property="member_price" />
+	</resultMap>
+		<select id="countMyShurackByUserId" parameterType="int" resultType="int">
+		select count(1)
+		from
+		shu_shurack ss
+		where ss.user_id=#{user_id} and (ss.status=1 or ss.status=11 or ss.status=21 or ss.status=31)
+	</select>
+	<select id="countShurackByUserId" parameterType="map" resultType="int">
+		select count(1)
+		from
+		shu_shurack ss
+		where ss.user_id=#{user_id} and (ss.status=#{status} or ss.status=9 or ss.status=91)
+	</select>
+	<select id="countShurackBySku" parameterType="map" resultType="int">
+		select count(1)
+		from
+		shu_shurack ss
+		where ss.user_id=#{user_id} and ss.status=#{status} and
+		ss.product_sku=#{product_sku}
+	</select>
+	<select id="selectBackendShurack" resultMap="BaseResultMap">
+		select *
+		from
+		shu_shurack ss
+		where ss.status=1 or ss.status=21 or ss.status=31
+	</select>		
+	<select id="selectShurackBySku" parameterType="map" resultMap="BaseResultMap">
+		select *
+		from
+		shu_shurack ss
+		where ss.user_id=#{user_id} and ss.status=#{status} and
+		ss.product_sku=#{product_sku}
+	</select>	
+	<select id="selectShipShurack" parameterType="map" resultMap="BaseResultMap">
+		select
+		ss.*,sp.style_type,sp.quantity,sp.size_us,sp.color,sp.image_url,sp.product_name,sp.member_price
+		from
+		shu_shurack ss
+		left join shu_products sp
+		on ss.product_sku =
+		sp.product_sku
+		where
+		ss.user_id=#{user_id} and (ss.status= 0 or ss.status= 9)
+		order by ss.add_time asc
+		limit #{limit}
+		<!--status= 0:等待发货, 1:已经发货/正在使用,2:已经捐赠,3:已经购买 -->
+
+		<!--ORDER BY add_time ASC -->
+	</select>	
+	<select id="selectMyShurack" parameterType="int" resultMap="BaseResultMap">
+		select
+		ss.*,sp.style_type,sp.quantity,sp.size_us,sp.color,sp.image_url,sp.product_name,sp.member_price
+		from
+		shu_shurack ss
+		left join shu_products sp
+		on ss.product_sku =
+		sp.product_sku
+		where
+		ss.user_id=#{user_id} and (ss.status= 1 or ss.status= 11 or ss.status=21 or ss.status=31)
+		order by ss.status,ss.ship_time
+		<!--status= 0:等待发货, 1:已经发货/正在使用,2:已经捐赠,3:已经购买 -->
+
+		<!--ORDER BY add_time ASC -->
+	</select>
+	<select id="selectDonateShurack" parameterType="int" resultMap="BaseResultMap">
+		select
+		ss.*,sp.style_type,sp.quantity,sp.size_us,sp.color,sp.image_url,sp.product_name,sp.member_price
+		from
+		shu_shurack ss
+		left join shu_products sp
+		on ss.product_sku =
+		sp.product_sku
+		where
+		ss.user_id=#{user_id} and (ss.status= 2 or ss.status=21)
+
+		<!--status= 0:等待发货, 1:已经发货/正在使用,2:已经捐赠,3:已经购买 -->
+
+		ORDER BY donate_time DESC
+	</select>	
+	<select id="selectBuyShurack" parameterType="int" resultMap="BaseResultMap">
+		select
+		ss.*,sp.style_type,sp.quantity,sp.size_us,sp.color,sp.image_url,sp.product_name,sp.member_price
+		from
+		shu_shurack ss
+		left join shu_products sp
+		on ss.product_sku =
+		sp.product_sku
+		where
+		ss.user_id=#{user_id} and (ss.status= 3 or ss.status=31)
+
+		<!--status= 0:等待发货, 1:已经发货/正在使用,2:已经捐赠,3:已经购买 -->
+
+		ORDER BY buy_time DESC
+	</select>	
+	<select id="selectShurackByUserId" parameterType="map" resultMap="BaseResultMap">
+		select
+		ss.*,sp.style_type,sp.quantity,sp.size_us,sp.color,sp.image_url,sp.product_name,sp.member_price
+		from
+		shu_shurack ss
+		left join shu_products sp
+		on ss.product_sku =
+		sp.product_sku
+		where
+		ss.user_id=#{user_id} and (ss.status=#{status} or ss.status=9 or ss.status=91)
+		<choose>
+			<!--status= 0:等待发货, 1:已经发货/正在使用,2:已经捐赠,3:已经购买 -->
+			<when test="status == 0">
+				ORDER BY add_time ASC
+			</when>
+			<when test="status == 1">
+				ORDER BY add_time ASC
+			</when>
+			<when test="status == 2">
+				ORDER BY donate_time DESC
+			</when>
+			<when test="status == 3">
+				ORDER BY buy_time DESC
+			</when>
+		</choose>
+	</select>
+	<select id="selectShurackByStatus" parameterType="int" resultMap="BaseResultMap">
+		select
+		*
+		from
+		shu_shurack ss
+
+		where ss.status=#{status}
+
+	</select>
+	<select id="selectShurackByShurackId" parameterType="int" resultMap="BaseResultMap">
+		select
+		*
+		from
+		shu_shurack ss
+
+		where ss.shurack_id=#{shurack_id}
+
+	</select>	
+	<select id="selectNextShip" parameterType="int" resultType="int">
+		select min(add_time) from
+		shu_shurack where
+		user_id=#{user_id} 
+	</select>
+	<insert id="insertShurack" parameterType="com.cosmetic.entity.Shurack">
+		INSERT INTO shu_shurack
+		(
+		user_id,
+		product_sku,
+		add_time,
+		donate_time,
+		buy_time,
+		status
+		)
+		VALUES
+		(
+		#{user_id,jdbcType=INTEGER},
+		#{product_sku,jdbcType=VARCHAR},
+		#{add_time,jdbcType=INTEGER},
+		#{donate_time,jdbcType=INTEGER},
+		#{buy_time,jdbcType=INTEGER},
+		#{status,jdbcType=INTEGER}
+		)
+	</insert>
+	<delete id="deleteShurack" parameterType="map">
+		delete from shu_shurack where user_id =
+		#{user_id}
+		and
+		product_sku = #{product_sku} 
+	</delete>
+	<update id="updateToTop" parameterType="map">
+		update shu_shurack t set t.add_time =
+		#{add_time}
+		where t.user_id =
+		#{user_id} and
+		t.product_sku = #{product_sku}
+	</update>
+	<update id="updateNextShip" parameterType="map">
+
+		UPDATE shu_shurack t
+		SET t. STATUS = 1
+		WHERE
+		t.shurack_id = (
+		SELECT a.shurack_id from (
+
+		SELECT
+		m.shurack_id
+		FROM
+		shu_shurack m
+		WHERE
+		m.user_id = #{user_id}
+		AND m. STATUS = 0
+		ORDER BY
+		add_time ASC
+		LIMIT 1
+		) a );
+	</update>
+	<update id="updateStatus" parameterType="map">
+		update shu_shurack t set t.status = #{status}
+		where t.shurack_id = #{shurack_id}
+	</update>
+	<update id="updateStatusAndShipTime" parameterType="map">
+		update shu_shurack t set t.status = #{status},t.ship_time = #{ship_time}
+		where t.shurack_id = #{shurack_id} 
+	</update>	
+	<update id="updateStatusAndDonateTime" parameterType="map">
+		update shu_shurack t set t.status =
+		#{status},t.donate_time = #{donate_time}
+		where t.shurack_id = #{shurack_id} 
+	</update>
+	<update id="updateStatusAndBuyTime" parameterType="map">
+		update shu_shurack t set t.status =
+		#{status},t.buy_time = #{buy_time}
+		where t.shurack_id = #{shurack_id} 
+	</update>
+	<update id="updateShurack" >
+		update shu_shurack ss,shu_products sp
+		set ss.status = (case when sp.quantity>0 then 0 else 9 end)
+		where ss.product_sku =
+		sp.product_sku and (ss.status = 0 or ss.status = 9)
+	</update>	
+</mapper>

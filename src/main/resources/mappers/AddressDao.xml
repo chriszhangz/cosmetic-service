@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cosmetic.dao.AddressDao">
+	<resultMap id="AddressResultMap" type="com.cosmetic.entity.UserAddress">
+		<id column="address_id" property="address_id" jdbcType="INTEGER" />
+		<result column="address_type" property="address_type" jdbcType="INTEGER" />
+		<result column="user_id" property="user_id" jdbcType="INTEGER" />
+		<result column="first_name" property="first_name" jdbcType="VARCHAR" />
+		<result column="last_name" property="last_name" jdbcType="VARCHAR" />
+		<result column="country" property="country" jdbcType="VARCHAR" />
+		<result column="state" property="state" jdbcType="VARCHAR" />
+		<result column="city" property="city" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="address2" property="address2" jdbcType="VARCHAR" />
+		<result column="zipcode" property="zipcode" jdbcType="VARCHAR" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="getAddressBookByType" parameterType="map"
+		resultMap="AddressResultMap">
+		SELECT
+		address_id,
+		address_type,
+		user_id,
+		first_name,
+		last_name,
+		country,
+		state,
+		city,
+		address,
+		address2,
+		zipcode,
+		phone
+		FROM
+		shu_user_address
+		WHERE
+		user_id = #{user_id,jdbcType=INTEGER}
+		<if test="address_type != 9">
+			and address_type = #{address_type,jdbcType=INTEGER}
+		</if>
+	</select>
+	<select id="getAddressBookByAddid" parameterType="int"
+		resultMap="AddressResultMap">
+		SELECT * FROM shu_user_address WHERE address_id =
+		#{address_id}
+	</select>
+
+	<insert id="insert" parameterType="com.cosmetic.entity.UserAddress">
+		insert into shu_user_address (address_id, address_type, user_id,
+		first_name, last_name,
+		country, state, city,
+		address, address2,
+		zipcode, phone)
+		values (#{address_id,jdbcType=INTEGER}, #{address_type,jdbcType=INTEGER},
+		#{user_id,jdbcType=INTEGER},
+		#{first_name,jdbcType=VARCHAR}, #{last_name,jdbcType=VARCHAR},
+		#{country,jdbcType=VARCHAR}, #{state,jdbcType=VARCHAR},
+		#{city,jdbcType=VARCHAR},
+		#{address,jdbcType=VARCHAR}, #{address2,jdbcType=VARCHAR},
+		#{zipcode,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR})
+		<selectKey resultType="int" keyProperty="address_id">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="com.cosmetic.entity.UserAddress">
+		update
+		shu_user_address set
+		first_name = #{first_name,jdbcType=VARCHAR},
+		last_name = #{last_name,jdbcType=VARCHAR},
+		country = #{country,jdbcType=VARCHAR},
+		state = #{state,jdbcType=VARCHAR},
+		city = #{city,jdbcType=VARCHAR},
+		address = #{address,jdbcType=VARCHAR},
+		address2 = #{address2,jdbcType=VARCHAR},
+		zipcode = #{zipcode,jdbcType=VARCHAR},
+		phone = #{phone,jdbcType=VARCHAR}
+		where address_id =
+		#{address_id,jdbcType=INTEGER}
+	</update>
+	<delete id="deleteByPrimaryKey" parameterType="int">
+		delete from
+		shu_user_address
+		where address_id = #{address_id,jdbcType=INTEGER}
+	</delete>
+	<delete id="deleteByUid" parameterType="map">
+		delete from
+		shu_user_address
+		where user_id = #{user_id,jdbcType=INTEGER} and address_type = #{address_type,jdbcType=INTEGER} 
+	</delete>
+</mapper>

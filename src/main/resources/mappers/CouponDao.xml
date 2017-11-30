@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cosmetic.dao.CouponDao">
+	<resultMap id="BaseResultMap" type="com.cosmetic.entity.Coupon">
+		<id column="rec_id" jdbcType="INTEGER" property="rec_id" />
+		<result column="coupon_id" jdbcType="VARCHAR" property="coupon_id" />
+		<result column="code" jdbcType="VARCHAR" property="code" />
+		<result column="type" jdbcType="INTEGER" property="type" />
+		<result column="shoo_coin" jdbcType="INTEGER" property="type" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+	</resultMap>
+	<select id="selectCouponInfo" parameterType="String"
+		resultType="com.cosmetic.entity.Coupon">
+		select *
+		from
+		shu_coupon
+		where coupon_id=#{coupon_id}   limit 1
+	</select>
+	<select id="selectCouponByCode" parameterType="String"
+		resultType="com.cosmetic.entity.Coupon">
+		select *
+		from
+		shu_coupon
+		where code=#{code}   
+	</select>
+
+</mapper>

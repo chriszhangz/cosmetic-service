@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cosmetic.dao.CouponHistoryDao">
+	<resultMap id="BaseResultMap" type="com.cosmetic.entity.CouponHistory">
+		<id column="rec_id" jdbcType="INTEGER" property="rec_id" />
+		<result column="user_id" jdbcType="INTEGER" property="user_id" />
+		<result column="sub_order_id" jdbcType="VARCHAR" property="sub_order_id" />
+		<result column="coupon_id" jdbcType="VARCHAR" property="coupon_id" />
+		<result column="code" jdbcType="VARCHAR" property="code" />
+		<result column="type" jdbcType="INTEGER" property="type" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+		<result column="created" jdbcType="INTEGER" property="created" />
+	</resultMap>
+	<insert id="insertCouponHistory" parameterType="com.cosmetic.entity.CouponHistory">
+		INSERT INTO shu_coupon_history
+		(
+		rec_id,
+		user_id,
+		sub_order_id,
+		coupon_id,
+		code,
+		type,
+		status,
+		created
+		)
+		VALUES
+		(
+		#{rec_id,jdbcType=INTEGER},
+		#{user_id,jdbcType=INTEGER},
+		#{sub_order_id,jdbcType=VARCHAR},
+		#{coupon_id,jdbcType=VARCHAR},
+		#{code,jdbcType=VARCHAR},
+		#{type,jdbcType=INTEGER},
+		#{status,jdbcType=INTEGER},
+		#{created,jdbcType=INTEGER}	
+		)
+		
+	</insert>
+
+</mapper>

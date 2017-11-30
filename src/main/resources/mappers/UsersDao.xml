@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cosmetic.dao.UsersDao">
+
+	<resultMap id="BaseResultMap" type="com.cosmetic.entity.Users">
+		<id column="user_id" jdbcType="INTEGER" property="userId" />
+		<result column="email" jdbcType="VARCHAR" property="email" />
+		<result column="user_name" jdbcType="VARCHAR" property="userName" />
+		<result column="first_name" jdbcType="VARCHAR" property="firstName" />
+		<result column="last_name" jdbcType="VARCHAR" property="lastName" />
+		<result column="password" jdbcType="VARCHAR" property="password" />
+		<result column="user_type" jdbcType="INTEGER" property="userType" />
+		<result column="preset_type" jdbcType="INTEGER" property="presetType" />
+		<result column="wait_list_id" jdbcType="INTEGER" property="waitListId" />
+		<result column="sex" jdbcType="INTEGER" property="sex" />
+		<result column="birthday" jdbcType="DATE" property="birthday" />
+		<result column="pay_points" jdbcType="INTEGER" property="payPoints" />
+		<result column="rank_points" jdbcType="INTEGER" property="rankPoints" />
+		<result column="user_rank" jdbcType="TINYINT" property="userRank" />
+		<result column="zipcode" property="zipcode" jdbcType="VARCHAR" />
+		<result column="shipping_address_id" jdbcType="INTEGER" property="shippingAddressId" />
+		<result column="billing_address_id" jdbcType="INTEGER" property="billingAddressId" />
+		<result column="reg_time" jdbcType="INTEGER" property="regTime" />
+		<result column="last_login" jdbcType="INTEGER" property="lastLogin" />
+		<result column="last_sent_date" jdbcType="DATE" property="lastSentDate" />
+		<result column="last_ip" jdbcType="VARCHAR" property="lastIp" />
+		<result column="visit_count" jdbcType="INTEGER" property="visitCount" />
+		<result column="is_special" jdbcType="TINYINT" property="isSpecial" />
+		<result column="salt" jdbcType="VARCHAR" property="salt" />
+		<result column="parent_id" jdbcType="INTEGER" property="parentId" />
+		<result column="flag" jdbcType="TINYINT" property="flag" />
+		<result column="invitation_code" jdbcType="VARCHAR" property="invitationCode" />
+		<result column="mobile_phone" jdbcType="VARCHAR" property="mobilePhone" />
+		<result column="is_validated" jdbcType="TINYINT" property="isValidated" />
+		<result column="subscribed" jdbcType="INTEGER" property="subscribed" />
+		<result column="avatar" jdbcType="VARCHAR" property="avatar" />
+	</resultMap>
+
+
+	<select id="selectEmailByName" parameterType="map" resultType="String">
+		select email from shu_users where first_name= #{first_name} and last_name= #{last_name} and mobile_phone= #{mobile_phone} limit 1
+	</select>
+	<select id="selectUserInfoByID" parameterType="int" resultMap="BaseResultMap">
+		select * from shu_users where user_id= #{user_id}
+	</select>
+	<select id="getPasswordSalt" parameterType="String" resultMap="BaseResultMap">
+		select
+		user_id,user_name,first_name,last_name,password,salt from shu_users where email= #{email}
+	</select>
+	<update id="setPasswordSalt" parameterType="com.cosmetic.entity.Users">
+		update shu_users set password=#{password},salt=#{salt},last_login=#{lastLogin}
+		<if test="invitationCode != null">
+			,invitation_code = #{invitationCode}
+		</if>
+		<if test="userType != null">
+			,user_type = #{userType}
+		</if>
+		where email= #{email}
+	</update>
+	<update id="verifyEmail" parameterType="com.cosmetic.entity.Users">
+		update shu_users set password=#{password},salt=#{salt},last_login=#{lastLogin},is_validated=1
+		<if test="invitationCode != null">
+			,invitation_code = #{invitationCode}
+		</if>
+		<if test="userType != null">
+			,user_type = #{userType}
+		</if>
+		where email= #{email}
+	</update>	
+	<update id="setPasswordSaltByUid" parameterType="com.cosmetic.entity.Users">
+		update shu_users set
+		password=#{password},salt=#{salt} where user_Id= #{userId}
+	</update>
+	<select id="getPassword" parameterType="int" resultType="String">
+		select password from shu_users where
+		user_id= #{id}
+	</select>
+	<select id="selectUserCountByUserName" parameterType="String" resultType="int">
+		select count(*)
+		from shu_users where user_name= #{user_name}
+	</select>
+	<select id="selectUIdByEmail" parameterType="String" resultType="Integer">
+		select user_id from
+		shu_users where email= #{email}
+	</select>
+	<select id="getUserIdByInvite" parameterType="String" resultType="int">
+		select user_id from
+		shu_users where invitation_code= #{invitation_code}
+	</select>
+	<select id="selectUserCountByInvite" parameterType="String" resultType="int">
+		select count(*) from
+		shu_users where invitation_code= #{invitation_code}
+	</select>
+
+	<update id="updateRealNameByUid" parameterType="map">
+		update shu_users t set t.first_name = #{first_name},t.last_name = #{last_name} where t.user_id =
+		#{user_id}
+	</update>
+	<update id="updatePhoneByUid" parameterType="map">
+		update shu_users t set t.mobile_phone = #{mobile_phone} where t.user_id = #{user_id}
+	</update>	
+	<update id="updateUserNameByUid" parameterType="map">
+		update shu_users t set t.user_name = #{user_name} where t.user_id = #{user_id}
+	</update>
+	<update id="updateEmailByUid" parameterType="map">
+		update shu_users t set t.email = #{email} where t.user_id = #{user_id}
+	</update>
+	<update id="updatePointByUid" parameterType="map">
+		update shu_users t set t.pay_points = t.pay_points - #{point} where t.user_id = #{user_id}
+	</update>
+
+	<select id="selectUsersTypeByUid" parameterType="int" resultType="Map">
+		SELECT user_type,preset_type FROM shu_users t where t.user_id = #{user_id}
+	</select>
+	<select id="selectUsersByInviteCode" parameterType="map" resultType="int">
+		SELECT count(1) FROM shu_users t where t.invitation_code = #{invite_code}
+	</select>
+	<select id="selectUserInfoByInviteCode" parameterType="map" resultMap="BaseResultMap">
+		select * from shu_users where invitation_code = #{invite_code}
+	</select>
+	<update id="updateInviteCodeByUid" parameterType="map">
+		update shu_users t set t.invitation_code = #{invite_code} where t.user_id = #{user_id}
+	</update>
+	<update id="updateUserTypeByUid" parameterType="map">
+		update shu_users t set t.user_type = #{user_type},t.preset_type = #{preset_type} where t.user_id = #{user_id}
+	</update>
+	<update id="updateUserPresetTypeByUid" parameterType="map">
+		update shu_users t set t.preset_type = #{preset_type} where t.user_id = #{user_id}
+	</update>
+	<update id="updatePayPointsByUid" parameterType="map">
+		update shu_users t set t.pay_points = #{pay_points} where t.user_id = #{user_id}
+	</update>
+	<update id="updateUserInfoByUid" parameterType="map">
+		update shu_users t set t.user_name = #{user_name},t.first_name = #{first_name},t.last_name =
+		#{last_name},t.zipcode = #{zipcode},t.birthday = #{birthday},t.sex = #{sex},t.mobile_phone = #{mobile_phone},t.avatar = #{avatar}
+		where t.user_id = #{user_id}
+	</update>
+	<update id="updateFirstOrderTimeByUid" parameterType="map">
+		update shu_users t set t.first_order_time = UNIX_TIMESTAMP() where t.user_id = #{user_id}
+	</update>
+	<select id="selectUsersByID" parameterType="int" resultMap="BaseResultMap">
+		select * from shu_users where user_id= #{user_id}
+	</select>
+	<update id="updateSubscribeByUid" parameterType="map">
+		update shu_users t set t.subscribed = #{subscribed} where t.user_id = #{user_id}
+	</update>
+	
+	<insert id="insertUsers" parameterType="com.cosmetic.entity.Users">
+		INSERT INTO shu_users (
+		email,
+		user_name,
+		first_name,
+		last_name,
+		password,
+		user_type,
+		salt,
+		sex,
+		birthday,
+		zipcode,
+		reg_time,
+		last_login,
+		mobile_phone,
+		subscribed
+		)
+		VALUES
+		(
+		#{email,jdbcType=VARCHAR},
+		#{userName,jdbcType=VARCHAR},
+		#{firstName,jdbcType=VARCHAR},
+		#{lastName,jdbcType=VARCHAR},
+		#{password,jdbcType=VARCHAR},
+		#{userType,jdbcType=INTEGER},
+		#{salt,jdbcType=VARCHAR},
+		#{sex,jdbcType=INTEGER},
+		#{birthday,jdbcType=DATE},
+		#{zipcode,jdbcType=INTEGER},
+		#{regTime,jdbcType=INTEGER},
+		#{lastLogin,jdbcType=INTEGER},
+		#{mobilePhone,jdbcType=VARCHAR},
+		#{subscribed,jdbcType=INTEGER}
+		)
+	</insert>
+	<select id="selectPayPointsByUid" parameterType="int" resultType="int">
+		select t.pay_points from shu_users t where t.user_id = #{user_id}
+	</select>
+	<update id="addPayPointsByUid" parameterType="int">
+		update shu_users t set t.pay_points = t.pay_points+1 where t.user_id = #{user_id}
+	</update>
+	<update id="subPayPointsByUid" parameterType="int">
+		update shu_users t set t.pay_points = t.pay_points-1 where t.user_id = #{user_id}
+	</update>
+	<select id="selectRankPointsByUid" parameterType="int" resultType="int">
+		select t.rank_points from shu_users t where t.user_id = #{user_id}
+	</select>
+	<update id="addRankPointsByUid" parameterType="int">
+		update shu_users t set t.rank_points = t.rank_points+1 where t.user_id = #{user_id}
+	</update>
+	<update id="subRankPointsByUid" parameterType="int">
+		update shu_users t set t.rank_points = t.rank_points-1 where t.user_id = #{user_id}
+	</update>	
+	<select id="selectConfigByKey" parameterType="String" resultType="String">
+		select t.value from shu_config t where t.key = #{key}
+	</select>	
+</mapper>

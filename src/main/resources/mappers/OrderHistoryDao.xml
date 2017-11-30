@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cosmetic.dao.OrderHistoryDao">
+  <resultMap id="BaseResultMap" type="com.cosmetic.entity.OrderHistory" >
+    <id column="rec_id" property="recId" jdbcType="INTEGER" />
+    <result column="user_id" property="user_id" jdbcType="INTEGER" />
+    <result column="charge_id" property="charge_id" jdbcType="VARCHAR" />
+    <result column="so_id" property="so_id" jdbcType="INTEGER" />
+	<result column="product_sku" jdbcType="VARCHAR" property="product_sku" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="created" property="created" jdbcType="INTEGER" />
+    <result column="currency" property="currency" jdbcType="VARCHAR" />
+    <result column="customer" property="customer" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="address_city" property="address_city" jdbcType="VARCHAR" />
+    <result column="address_country" property="address_country" jdbcType="VARCHAR" />
+    <result column="address_line1" property="address_line1" jdbcType="VARCHAR" />
+    <result column="address_line1_check" property="address_line1_check" jdbcType="VARCHAR" />
+    <result column="address_line2" property="address_line2" jdbcType="VARCHAR" />
+    <result column="address_state" property="address_state" jdbcType="VARCHAR" />
+    <result column="address_zip" property="address_zip" jdbcType="VARCHAR" />
+    <result column="address_zip_check" property="address_zip_check" jdbcType="VARCHAR" />
+    <result column="card_id" property="card_id" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="brand" property="brand" jdbcType="VARCHAR" />
+    <result column="last4" property="last4" jdbcType="VARCHAR" />
+    <result column="country" property="country" jdbcType="VARCHAR" />
+    <result column="exp_month" property="exp_month" jdbcType="VARCHAR" />
+    <result column="exp_year" property="exp_year" jdbcType="VARCHAR" />
+  </resultMap>
+	<select id="selectOrderHistoryByUserId" parameterType="int"
+		resultMap="BaseResultMap">
+		select * from shu_order_history where user_id= #{user_id}
+	</select>
+	<select id="selectOrderHistoryByChargeId" parameterType="int"
+		resultMap="BaseResultMap">
+		select * from shu_order_history where "charge_id"= #{"charge_id"}
+	</select>	
+	<select id="selectOrderHistoryList" parameterType="int"
+		resultMap="BaseResultMap">
+		select * from shu_order_history where 1 = 1
+		<if test="user_id != null">
+			and user_id = #{user_id}
+		</if>
+		<if test="user_id != null">
+			and user_id = #{user_id}
+		</if>		
+	</select>		
+	<insert id="insert" parameterType="com.cosmetic.entity.OrderHistory">
+		insert into shu_order_history (user_id,charge_id,so_id, amount,
+		created, currency, customer,
+		description, status, address_city,
+		address_country, address_line1, address_line1_check,
+		address_line2, address_state, address_zip, address_zip_check, card_id, name, brand, last4, country, exp_month, exp_year
+		)
+		values (#{user_id,jdbcType=INTEGER}, #{charge_id,jdbcType=VARCHAR}, #{so_id,jdbcType=INTEGER}, #{amount,jdbcType=DECIMAL},
+		#{created,jdbcType=INTEGER}, #{currency,jdbcType=VARCHAR}, #{customer,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
+		#{status,jdbcType=VARCHAR}, #{address_city,jdbcType=VARCHAR}, #{address_country,jdbcType=VARCHAR}, #{address_line1,jdbcType=VARCHAR},
+		#{address_line1_check,jdbcType=INTEGER}, #{address_line2,jdbcType=VARCHAR},
+		#{address_state,jdbcType=VARCHAR},
+		#{address_zip,jdbcType=VARCHAR}, #{address_zip_check,jdbcType=VARCHAR}, #{card_id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+		#{brand,jdbcType=VARCHAR}, #{last4,jdbcType=VARCHAR}, #{country,jdbcType=VARCHAR}, #{exp_month,jdbcType=VARCHAR}, #{exp_year,jdbcType=VARCHAR}
+		)
+	</insert>
+ 
+  	   
+</mapper>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cosmetic.dao.SubOrderDao">
+    <resultMap id="BaseResultMap" type="com.cosmetic.entity.SubOrder">
+	    <id column="rec_id" jdbcType="INTEGER" property="rec_id" />
+	    <result column="sub_order_id" jdbcType="INTEGER" property="sub_order_id" />
+	    <result column="sub_type" jdbcType="INTEGER" property="sub_type" />
+	    <result column="user_id" jdbcType="INTEGER" property="user_id" />
+	    <result column="customer" jdbcType="VARCHAR" property="customer" />
+	    <result column="cancel_at_period_end" jdbcType="VARCHAR" property="cancel_at_period_end" />
+	    <result column="canceled_at" jdbcType="INTEGER" property="canceled_at" />
+	    <result column="created" jdbcType="INTEGER" property="created" />
+	    <result column="current_period_start" jdbcType="INTEGER" property="current_period_start" />
+	    <result column="current_period_end" jdbcType="INTEGER" property="current_period_end" />
+	    <result column="ended_at" jdbcType="INTEGER" property="ended_at" />
+	    <result column="plan_id" jdbcType="VARCHAR" property="plan_id" />
+	    <result column="amount" jdbcType="DECIMAL" property="amount" />
+	    <result column="start" jdbcType="INTEGER" property="start" />
+	    <result column="status" jdbcType="VARCHAR" property="status" />
+    </resultMap>
+    <select id="selectSubOrderById" parameterType="int" resultMap="BaseResultMap">
+        select * from shu_sub_order_info where sub_order_id = #{sub_order_id}
+    </select>
+    <select id="selectSubOrderByUid" parameterType="int" resultMap="BaseResultMap">
+        select * from shu_sub_order_info where user_id = #{user_id} and status = "active"
+    </select>
+
+<!--     <select id="selectSubOrderBySubTime" parameterType="int" resultMap="BaseResultMap">
+        select * from shu_sub_order_info where sub_time &lt;= #{sub_time} and sub_exc_status = 0
+    </select>     -->
+    <select id="selectDailySubOrder"  resultMap="BaseResultMap">
+        select * from shu_sub_order_info where current_period_end &lt;= UNIX_TIMESTAMP(NOW()) and status != 'canceled'
+    </select> 
+    <select id="selectShipSubOrder"  resultMap="BaseResultMap">
+        select * from shu_sub_order_info where current_period_start &lt;= UNIX_TIMESTAMP(NOW()) and UNIX_TIMESTAMP(NOW()) &lt;= current_period_end and status != 'canceled'
+    </select>     
+	<insert id="insertSubOrder" parameterType="com.cosmetic.entity.SubOrder">
+		INSERT INTO shu_sub_order_info
+		(
+		sub_order_id,
+		sub_type,
+		user_id,
+		customer,
+		cancel_at_period_end,
+		canceled_at,
+		created,
+		current_period_start,
+		current_period_end,
+		ended_at,
+		plan_id,
+		amount,
+		start,
+		status
+		)
+		VALUES
+		(
+		#{sub_order_id,jdbcType=INTEGER},
+		#{sub_type,jdbcType=INTEGER},
+		#{user_id,jdbcType=INTEGER},
+		#{customer,jdbcType=VARCHAR},
+		#{cancel_at_period_end,jdbcType=VARCHAR},
+		#{canceled_at,jdbcType=INTEGER},
+		#{created,jdbcType=INTEGER},
+		#{current_period_start,jdbcType=INTEGER},
+		#{current_period_end,jdbcType=INTEGER},
+		#{ended_at,jdbcType=INTEGER},
+		#{plan_id,jdbcType=VARCHAR},
+		#{amount,jdbcType=DECIMAL},
+		#{start,jdbcType=INTEGER},
+		#{status,jdbcType=VARCHAR}
+		)		
+	</insert>
+	<update id="updateBysubOrderId" parameterType="com.cosmetic.entity.SubOrder">
+		update shu_sub_order_info set
+		sub_type=#{sub_type,jdbcType=INTEGER},
+		user_id=#{user_id,jdbcType=INTEGER},
+		customer=#{customer,jdbcType=VARCHAR},
+		cancel_at_period_end=#{cancel_at_period_end,jdbcType=VARCHAR},
+		canceled_at=#{canceled_at,jdbcType=INTEGER},
+		created=#{created,jdbcType=INTEGER},
+		current_period_start=#{current_period_start,jdbcType=INTEGER},
+		current_period_end=#{current_period_end,jdbcType=INTEGER},
+		ended_at=#{ended_at,jdbcType=INTEGER},
+		plan_id=#{plan_id,jdbcType=VARCHAR},
+		amount=#{amount,jdbcType=DECIMAL},
+		start=#{start,jdbcType=INTEGER},
+		status=#{status,jdbcType=VARCHAR}
+		where sub_order_id = #{sub_order_id,jdbcType=INTEGER}
+	</update>	
+<!--   <update id="updateSubOrderById" parameterType="map">
+    update shu_sub_order_info t set t.sub_time = #{sub_time},t.sub_pay_status = #{sub_pay_status},t.sub_exc_status = #{sub_pay_status}
+    where t.sub_order_id = #{sub_order_id}
+  </update> 	
+  <update id="updateExcStatusById" parameterType="map">
+    update shu_sub_order_info t set t.sub_exc_status = #{sub_pay_status}
+    where t.sub_order_id = #{sub_order_id}
+  </update>  -->	  
+</mapper>
