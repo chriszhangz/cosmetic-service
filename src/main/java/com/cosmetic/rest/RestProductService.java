@@ -1,5 +1,6 @@
 package com.cosmetic.rest;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.GET;
@@ -14,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
 
 
 
@@ -69,7 +71,9 @@ public class RestProductService {
 	@Produces("application/json;charset=utf-8")
 	public Response getProductInfo(@QueryParam("token") String token,
 			@QueryParam("product_sku") String product_sku) throws Exception {
-		Map<String, Object> result = productServiceDelegate.selectProductBySku(token, product_sku);
+		//Map<String, Object> result = productServiceDelegate.selectProductBySku(token, product_sku);
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("Status", "OK");
 		return Response.status(Status.OK).entity(result).build();
 
 	}

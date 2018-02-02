@@ -81,7 +81,6 @@
 				and !execution(* com.cosmetic.rest.RestSecurityService.*(..))
 				and !execution(* com.cosmetic.rest.RestBackEndService.*(..))
 				and !execution(* com.cosmetic.rest.RestAdminService.*(..))
-				and !execution(* com.cosmetic.rest.RestTestService.*(..))
 				and !execution(* com.cosmetic.rest.RestUserService.resetPassword(..))" />
 			<aop:before pointcut-ref="rest" method="checkToken" />
 		</aop:aspect>

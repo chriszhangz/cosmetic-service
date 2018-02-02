@@ -39,8 +39,9 @@ public class ProductServiceDelegate {
 	public Map<String,Object> selectIndexInfo(String token, String type) throws Exception{
 		Map<String,Object>  result = new HashMap<String, Object>();
 		Integer typeInteger = Integer.valueOf(type);
-		List<String> Indexs= productService.selectIndexInfo(typeInteger);
-		
+		//List<String> Indexs= productService.selectIndexInfo(typeInteger);
+		List<String> Indexs = new ArrayList<String>();
+		Indexs.add("test");
 		result.put("token", token);
 		result.put("indexs", Indexs);
 		

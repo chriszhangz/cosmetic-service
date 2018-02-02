@@ -47,7 +47,7 @@ public class TokenAspect {
 					}
 				}
 			}
-			validateToken(token, m);
+			//validateToken(token, m);
 		} catch (YamiException e) {
 			throw e;
 		} catch (Exception e) {
